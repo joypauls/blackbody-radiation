@@ -82,9 +82,26 @@ visible_df <- df %>%
   mutate(betelgeuse_norm = (betelgeuse - min(betelgeuse))/(max(betelgeuse) - min(betelgeuse)))
 
 ggplot(visible_df, aes(wavelength, rigel_norm)) + 
+  # geom_rect(aes(xmin = 380, xmax = 440, ymin = 0, ymax = 1), fill = "purple", alpha = 0.1) +
+  # geom_rect(aes(xmin = 440, xmax = 485, ymin = 0, ymax = 1), fill = "blue", alpha = 0.1) +
+  # geom_rect(aes(xmin = 485, xmax = 510, ymin = 0, ymax = 1), fill = "cyan", alpha = 0.1) +
+  # geom_rect(aes(xmin = 510, xmax = 565, ymin = 0, ymax = 1), fill = "green", alpha = 0.1) +
+  # geom_rect(aes(xmin = 565, xmax = 590, ymin = 0, ymax = 1), fill = "yellow", alpha = 0.1) +
+  # geom_rect(aes(xmin = 590, xmax = 625, ymin = 0, ymax = 1), fill = "orange", alpha = 0.1) +
+  # geom_rect(aes(xmin = 625, xmax = 750, ymin = 0, ymax = 1), fill = "red", alpha = 0.1) +
   geom_line() + 
   # geom_line(aes(wavelength, rigel)) +
-  geom_line(aes(wavelength, betelgeuse_norm))
+  geom_line(aes(wavelength, betelgeuse_norm)) +
+  annotate("rect", xmin=380, xmax=440, ymin=0, ymax=1, alpha=0.2, fill="purple") +
+  annotate("rect", xmin = 440, xmax = 485, ymin = 0, ymax = 1, fill = "blue", alpha = 0.2) +
+  annotate("rect", xmin = 485, xmax = 510, ymin = 0, ymax = 1, fill = "cyan", alpha = 0.2) +
+  annotate("rect", xmin = 510, xmax = 565, ymin = 0, ymax = 1, fill = "green", alpha = 0.2) +
+  annotate("rect", xmin = 565, xmax = 590, ymin = 0, ymax = 1, fill = "yellow", alpha = 0.2) +
+  annotate("rect", xmin = 590, xmax = 625, ymin = 0, ymax = 1, fill = "orange", alpha = 0.2) +
+  annotate("rect", xmin = 625, xmax = 750, ymin = 0, ymax = 1, fill = "red", alpha = 0.2) +
+  ggtitle("Visible Light Spectrum") +
+  theme_light()
+  # geom_rect(aes(xmin = 450, xmax = 485, ymin = 0, ymax = 1), fill = "blue", alpha = 0.1)
   # scale_y_continuous(trans="sqrt", breaks=c(0, 5, 10, 15, 20, 25, 30), limits=c(0, 30)) + 
   # xlim(c(380, 700))
   # scale_x_continuous(trans="sqrt", limits=c(380, 700))
