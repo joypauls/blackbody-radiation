@@ -1,0 +1,146 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+
+---
+
+
+```{r}
+library(ggplot2)
+library(dplyr)
+```
+
+```{r}
+# constants
+h <- 6.626e-34
+kb <- 1.380e-23
+c <- 299792458
+wiens <- 2.90e6
+
+r_sun <- 6.95e5 # km
+r_earth <- 1.496e8 # km
+wavelength_scale <- 1e-9 # nm
+correction_factor <- ((r_sun/r_earth)**2)*wavelength_scale
+
+blackbody_curve <- function(lambda, t) {
+  return(
+    ((2*pi*h*(c**2)) / (lambda**5)) * (1 / (exp((h*c)/(lambda*kb*t)) - 1))
+  )
+}
+
+
+s <- seq(0, 3000e-9, 1e-9)
+df <- data.frame(
+  wavelength = s*1e9,
+  rigel = blackbody_curve(s, 10000)*correction_factor,
+  sun = blackbody_curve(s, 5778)*correction_factor,
+  betelgeuse = blackbody_curve(s, 3500)*correction_factor
+)
+
+
+ggplot(df, aes(wavelength, sun)) + 
+  geom_line() + 
+  geom_line(aes(wavelength, rigel)) +
+  geom_line(aes(wavelength, betelgeuse)) + 
+  geom_vline(xintercept=400, linetype="dashed") +
+  geom_vline(xintercept=700, linetype="dashed") +
+  geom_point(aes(x=wiens/10000, y=blackbody_curve((wiens/10000)*1e-9, 10000)*correction_factor)) +
+  geom_point(aes(x=wiens/5778, y=blackbody_curve((wiens/5778)*1e-9, 5778)*correction_factor)) +
+  geom_point(aes(x=wiens/3500, y=blackbody_curve((wiens/3500)*1e-9, 3500)*correction_factor)) +
+  scale_y_continuous(trans="sqrt", breaks=c(0, 5, 10, 15, 20, 25, 30), limits=c(0, 30)) + 
+  scale_x_continuous(trans="sqrt", breaks=c(100, 500, 1000, 1500, 2000), limits=c(50, 2000)) +
+  theme_light()
+
+
+```
+
+
+```{r}
+
+# TODO: CHange axis y to "more" and "less" remission, numbers not important
+
+
+visible_df <- df %>% 
+  filter((wavelength >= 380) & (wavelength <= 750)) %>%
+  mutate(rigel_norm = (rigel - min(rigel))/(max(rigel) - min(rigel))) %>%
+  mutate(betelgeuse_norm = (betelgeuse - min(betelgeuse))/(max(betelgeuse) - min(betelgeuse)))
+
+ggplot(visible_df, aes(wavelength, rigel_norm)) + 
+  geom_line() + 
+  # geom_line(aes(wavelength, rigel)) +
+  geom_line(aes(wavelength, betelgeuse_norm))
+  # scale_y_continuous(trans="sqrt", breaks=c(0, 5, 10, 15, 20, 25, 30), limits=c(0, 30)) + 
+  # xlim(c(380, 700))
+  # scale_x_continuous(trans="sqrt", limits=c(380, 700))
+```
+
+
+
+
+
+
+
+```{r}
+library(readr)
+```
+
+```{r}
+e490_df <- read_csv("./solar_spectra_astm_e490_am0.csv") %>% 
+  mutate_at(c("wavelength", "irradiance"), as.numeric)
+head(e490_df)
+```
+
+
+```{r}
+g173_df <- read_csv("./solar_spectra_astm_g173_smarts.csv") %>% 
+  mutate_at(c("wavelength", "global_irradiance", "direct_irradiance"), as.numeric)
+head(g173_df)
+```
+
+
+```{r}
+ggplot(e490_df, aes(wavelength, irradiance)) + 
+  geom_area(alpha=0.8 , size=0, colour="black", fill="red") +
+  geom_area(data=g173_df, aes(wavelength, direct_irradiance), alpha=0.8 , size=0, colour="black", fill="blue") + 
+  geom_line(data=df, aes(wavelength, sun), size=1) +
+  geom_vline(xintercept=400, linetype="dashed") +
+  geom_vline(xintercept=700, linetype="dashed") +
+  xlim(c(250, 2500)) +
+  ylim(c(0, 2.3)) +
+  theme_light()
+```
+
+
+```{r}
+```
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
